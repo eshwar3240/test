@@ -8,8 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from your Git repository
-                git credentialsId: 'github-access-token',git 'https://github.com/eshwar3240/test.git'
+                git branch: 'main', url: 'https://github.com/eshwar3240/test.git'
             }
         }
 
@@ -25,7 +24,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials-id') {
-                        dockerImage.push()
+                        dockerImage.push("${env.BUILD_NUMBER}")
+                        dockerImage.push("latest")
                     }
                 }
             }
@@ -36,7 +36,7 @@ pipeline {
         success {
             echo 'Docker image built and pushed successfully!'
         }
-         failure {
+        failure {
             echo 'Pipeline failed!'
             // Add notification steps here (e.g., email, Slack notification)
         }
